@@ -164,11 +164,16 @@ public class cadastroVIEW extends javax.swing.JFrame {
             String valor = cadastroValor.getText();
             String status = "A Venda";
             produto.setNome(nome);
+            try {
             produto.setValor(Integer.parseInt(valor));
+            
             produto.setStatus(status);
 
             ProdutosDAO produtodao = new ProdutosDAO();
             produtodao.cadastrarProduto(produto);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Valor inserido de: \""+cadastroValor.getText()+ "\" , é inválido.");
+            }
             
         }
         
