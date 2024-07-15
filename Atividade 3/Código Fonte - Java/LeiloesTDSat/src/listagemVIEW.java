@@ -1,12 +1,12 @@
 
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 /**
  *
  * @author Adm
@@ -54,6 +54,12 @@ public class listagemVIEW extends javax.swing.JFrame {
                 "ID", "Nome", "Valor", "Status"
             }
         ));
+        listaProdutos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listaProdutos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                listaProdutosMousePressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(listaProdutos);
 
         jLabel1.setFont(new java.awt.Font("Lucida Fax", 0, 18)); // NOI18N
@@ -62,9 +68,12 @@ public class listagemVIEW extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Lucida Fax", 0, 14)); // NOI18N
         jLabel2.setText("Vender Produto (ID)");
 
+        id_produto_venda.setEditable(false);
+        id_produto_venda.setFocusable(false);
         jScrollPane2.setViewportView(id_produto_venda);
 
         btnVender.setText("Vender");
+        btnVender.setEnabled(false);
         btnVender.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnVenderActionPerformed(evt);
@@ -136,10 +145,11 @@ public class listagemVIEW extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
-        String id = id_produto_venda.getText();
-        
+        int id = Integer.valueOf(id_produto_venda.getText());
+
         ProdutosDAO produtosdao = new ProdutosDAO();
-        
+        produtosdao.venderProduto(id);
+
         //produtosdao.venderProduto(Integer.parseInt(id));
         listarProdutos();
     }//GEN-LAST:event_btnVenderActionPerformed
@@ -152,6 +162,25 @@ public class listagemVIEW extends javax.swing.JFrame {
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
         this.dispose();
     }//GEN-LAST:event_btnVoltarActionPerformed
+
+    private void listaProdutosMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listaProdutosMousePressed
+
+        // TODO add your handling code here:
+        if (listaProdutos.getSelectedRow() > -1) {
+            String selectedValue = listaProdutos.getValueAt(listaProdutos.getSelectedRow(), 0).toString();
+            id_produto_venda.setText(selectedValue);
+            if (!"Vendido".equals(listaProdutos.getValueAt(listaProdutos.getSelectedRow(), 3))
+                    && listaProdutos.getValueAt(listaProdutos.getSelectedRow(), 3) != null
+                    && !listaProdutos.getValueAt(listaProdutos.getSelectedRow(), 3).toString().isEmpty()) {
+                btnVender.setEnabled(true);
+            } else {
+                btnVender.setEnabled(false);
+            }
+        } else {
+
+        }
+
+    }//GEN-LAST:event_listaProdutosMousePressed
 
     /**
      * @param args the command line arguments
@@ -201,16 +230,16 @@ public class listagemVIEW extends javax.swing.JFrame {
     private javax.swing.JTable listaProdutos;
     // End of variables declaration//GEN-END:variables
 
-    private void listarProdutos(){
+    private void listarProdutos() {
         try {
             ProdutosDAO produtosdao = new ProdutosDAO();
-            
+
             DefaultTableModel model = (DefaultTableModel) listaProdutos.getModel();
             model.setNumRows(0);
-            
+
             ArrayList<ProdutosDTO> listagem = produtosdao.listarProdutos();
-            
-            for(int i = 0; i < listagem.size(); i++){
+
+            for (int i = 0; i < listagem.size(); i++) {
                 model.addRow(new Object[]{
                     listagem.get(i).getId(),
                     listagem.get(i).getNome(),
@@ -220,6 +249,6 @@ public class listagemVIEW extends javax.swing.JFrame {
             }
         } catch (Exception e) {
         }
-    
+
     }
 }
